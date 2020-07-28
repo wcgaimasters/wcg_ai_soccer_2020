@@ -57,7 +57,7 @@ Please refer to the [Wiki pages](https://github.com/wcgaimasters/WCG-AI-MASTERS-
 
 - aiwc_sample.wbt: Webots world file
 
-- create_world.py: A script that creates a world file **(Participants should use this file to tell the simulation which uniform number and robot types to use)**
+- create_world.py: A script that creates a world file **(Participants should use this file to tell the simulation which uniform number and robot types to use for each team)**
 
 **config.json**: Configuration file for setting player executables, setting game duration, and setting some rules on/off for effective training. Please refer to the [Wiki page](https://github.com/wcgaimasters/WCG-AI-MASTERS-Manual-2020/wiki/How-to-use-local-PC-simulation-program) for parameter descriptions **(Participants should modify the player information in this file to tell the simulation which program to execute)**
 # wcg_ai_soccer_2020
