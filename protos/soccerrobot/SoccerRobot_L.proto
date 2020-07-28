@@ -1,0 +1,443 @@
+#VRML_SIM R2020a utf8
+#Author(s):         Inbae Jeong, Chansol Hong, Taeyoung Kim
+# tags: static
+
+PROTO SoccerRobot_L [
+  # fields inherited from Robot
+  field SFVec3f    translation         0 0 0
+  field SFRotation rotation            0 1 0 0
+  field SFVec3f    scale               1 1 1
+
+  # fields for left and right wheels
+  field SFVec3f    lwTranslation       -0.07 -0.005 0
+  field SFRotation lwRotation          1 0 0 1.570796
+  field SFVec3f    rwTranslation       0.07 -0.005 0
+  field SFRotation rwRotation          1 0 0 1.570796
+  field SFVec3f    fsTranslation       0 0 0
+  field SFRotation fsRotation          1 0 0 0
+  field SFVec3f    bsTranslation       0 -0.037 0
+  field SFRotation bsRotation          1 0 0 0
+
+  # children
+  field SFString   name                "soccer robot"
+  field SFString   model               ""
+  field SFString   description         ""
+  field SFString   customData          ""
+  # contactMaterial
+  field MFNode     immersionProperties [ ]
+  # boundingObject
+  # physics
+  field SFBool     locked              FALSE
+  field SFFloat    translationStep     0.01        # m
+  field SFFloat    rotationStep        0.261799387 # pi/12 rad
+  field SFFloat    radarCrossSection   0.0
+  field SFString   controller          "void"
+  # field SFString   controllerArgs      ""
+  field SFBool     synchronization     TRUE
+  field MFFloat    battery             [ ]
+  field SFFloat    cpuConsumption      10          # [0,inf)
+  # selfCollision
+  field SFBool     showWindow          FALSE
+  field SFString   window              ""
+  field SFString   remoteControl       ""
+
+  # fields related to differential wheel robot
+  field SFFloat    motorConsumption    0           # [0,inf)
+  field SFFloat    axleLength          0.14
+  field SFFloat    wheelRadius         0.04
+  field SFFloat    maxSpeed            52.5          # (0,inf)
+  field SFFloat    slipNoise           0           # [0,inf)
+  field SFFloat    maxTorque           1.2         # (0,inf)
+
+  # fields specific to SoccerRobotBox
+  field SFFloat  height 0.09
+
+  field SFBool   kinematic FALSE # If TRUE, Physics' are ignored
+
+  field SFFloat  wheelThickness 0.004
+  field SFFloat  wheelTireThickness 0.0
+
+  field SFFloat  bodySize       0.15
+  # field SFFloat  bodyRadius     0.0575
+  field SFFloat  bodySubdivision 4
+  field SFFloat  wheelVisibleRatio 0.75
+
+  field SFFloat  weightThickness 0.01
+
+  field SFColor teamColor 0 0 0
+  field SFColor slc 0 0 0
+
+  field SFBool   topCover   TRUE
+  field SFBool   sideCover  TRUE
+  field SFBool   weightPlate FALSE
+
+  field SFFloat  distanceToFloor 0.002
+  field SFFloat  distanceToPatch 0.001
+  field SFFloat  distanceToWheel 0.001
+  field SFNode bodyPhysics Physics {
+    density -1
+    mass 2.0
+    centerOfMass [0 -0.03 0]
+  }
+  field SFNode wheelPhysics Physics {
+    density -1
+    mass 0.15
+  }
+  field SFNode sliderPhysics Physics {
+    density -1
+    mass 0.5
+  }
+  field SFNode weightPhysics Physics {
+    density -1
+    mass 0.0001
+  }
+  field SFNode supportPhysics Physics {
+    density -1
+    mass 0.0001
+  }
+
+  field SFString bodyContactMaterial "default"
+  field SFString wheelContactMaterial "default"
+
+  field MFNode patches [
+    SoccerRobotNumberPatch_L { isTeamTagRed TRUE role "GK" name "number_patch" }
+    SoccerRobotIDPatch { isTeamTagRed TRUE id 0 name "id_patch_red" }
+    SoccerRobotIDPatch { isTeamTagRed FALSE id 0 name "id_patch_blue" }
+  ]
+
+  field MFNode camBody [
+    SoccerRobotCamBody { }
+  ]
+]
+{
+  %{
+    local h  = fields.height.value
+    local al = fields.axleLength.value
+    local wr = fields.wheelRadius.value
+    local wt = fields.wheelThickness.value
+    local wtt = fields.wheelTireThickness.value
+    local bs = fields.bodySubdivision.value
+    local br = 0
+    if bs == 4 then
+      br = fields.bodySize.value / math.sqrt(2)
+    else
+      br = fields.bodyRadius.value
+    end
+    local wvr = math.min(math.max(0, fields.wheelVisibleRatio.value), 1)
+    local wht = fields.weightThickness.value
+    local tc = fields.topCover.value
+    local sc = fields.sideCover.value
+    local wp = fields.weightPlate.value
+    local df = fields.distanceToFloor.value
+    local dp = 2*fields.distanceToPatch.value
+    local dw = fields.distanceToWheel.value
+
+    local kinematic = fields.kinematic.value
+    if (not kinematic) and (not fields.bodyPhysics.value) and (not fields.wheelPhysics.value) then
+      print("kinematics mode is enabled")
+      kinematic = true
+    end
+
+    local mv = fields.maxSpeed.value
+    local sn = fields.slipNoise.value
+  }%
+  Robot {
+    translation         IS translation
+    rotation            IS rotation
+    scale               IS scale
+    children [
+      DEF PATCHES Transform {
+        translation 0 %{=h / 2}% 0
+        rotation 0 1 0 %{=math.pi / 2}%
+        children IS patches
+      }
+      DEF CAMBODY Transform {
+        rotation 0 1 0 %{=math.pi / 2}%
+        children IS camBody
+      }
+      DEF SPOTLIGHT SpotLight {
+        attenuation 0 0 0.25
+        beamWidth 0.5
+        color IS slc
+        cutOffAngle 0.45
+        direction 0 -1 0
+        intensity 1
+        location 0 0.95 0
+        radius 1.1
+      }
+      DEF BODYSHAPE Transform {
+        translation 0 -0.043 0
+        rotation 0 1 0 %{=3*math.pi/2}%
+        children [
+          Shape{
+            appearance Appearance{
+              material Material {
+              diffuseColor IS teamColor
+              }
+            }
+            geometry IndexedFaceSet {
+              coord Coordinate {
+                point [
+                   0.075  0.000  0.075
+                   0.075  0.000 -0.075
+                  -0.090  0.000 -0.075
+                  -0.090  0.000  0.075
+                   0.075  0.087  0.075
+                   0.075  0.087 -0.075
+                  -0.025  0.087 -0.075
+                  -0.025  0.087  0.075
+                ]
+              }
+              ccw TRUE
+              coordIndex [
+                3 2 1 0 -1
+                0 1 5 4 -1
+                1 2 6 5 -1
+                2 3 7 6 -1
+                3 0 4 7 -1
+                4 5 6 7 -1
+              ]
+            }
+          }
+        ]
+      }
+      DEF LEFTJOINT HingeJoint {
+        jointParameters HingeJointParameters {
+          axis -1 0 0
+          anchor %{=-al / 2}% %{=(-h + 2 * wr) / 2}% 0
+        }
+        device [
+          RotationalMotor {
+            name "left wheel motor"
+            consumptionFactor IS motorConsumption
+            maxVelocity %{=mv}%
+            maxTorque IS maxTorque
+            sound ""
+          }
+        ]
+        endPoint  DEF LEFTWHEEL Solid {
+          translation IS lwTranslation
+          rotation IS lwRotation
+          
+          name "left wheel"
+          contactMaterial IS wheelContactMaterial
+          physics IS wheelPhysics
+          boundingObject Transform {
+            rotation 0 0 1 %{=math.pi / 2}%
+            children [
+              Cylinder {
+                height IS wheelThickness
+                radius IS wheelRadius
+                subdivision 24
+              }
+            ]
+          }
+        }
+      }
+      DEF RIGHTJOINT HingeJoint {
+        jointParameters HingeJointParameters {
+          axis -1 0 0
+          anchor %{=al / 2}% %{=(-h + 2 * wr) / 2}% 0
+        }
+        device [
+          RotationalMotor {
+            name "right wheel motor"
+            consumptionFactor IS motorConsumption
+            maxVelocity %{=mv}%
+            maxTorque IS maxTorque
+            sound ""
+          }
+        ]
+        endPoint  Solid {
+          translation IS rwTranslation
+          rotation IS rwRotation
+          
+          name "right wheel"
+          contactMaterial IS wheelContactMaterial
+          physics IS wheelPhysics
+          boundingObject Transform {
+            rotation 0 0 1 %{=math.pi / 2}%
+            children [
+              Cylinder {
+                height IS wheelThickness
+                radius IS wheelRadius
+                subdivision 24
+              }
+            ]
+          }
+        }
+      }
+      DEF FRONTJOINT SliderJoint {
+        jointParameters JointParameters {
+          axis 0 0 -1
+          minStop 0
+          maxStop 0.15
+        }
+        device [
+          LinearMotor {
+            name "front slider motor"
+            maxForce 200
+            sound ""
+          }
+        ]
+        endPoint  DEF FRONTSLIDER Solid {
+          translation IS fsTranslation
+          rotation IS fsRotation
+
+          name "front slider"
+          contactMaterial IS bodyContactMaterial
+          physics IS sliderPhysics
+          boundingObject Transform {
+            rotation 0 1 0 %{=math.pi / 2}%
+            children [
+              IndexedFaceSet {
+                coord Coordinate {
+                  point [
+                    -0.050 -0.030  0.073
+                     0.070 -0.030  0.073
+                     0.070 -0.030 -0.073
+                    -0.050 -0.030 -0.073
+                     0.040 -0.010  0.073
+                     0.040 -0.010 -0.073
+                    -0.050 -0.010 -0.073
+                    -0.050 -0.010  0.073
+                  ]
+                }
+                ccw TRUE
+                coordIndex [
+                  3 2 1 0 -1
+                  0 1 4 7 -1
+                  1 2 5 4 -1
+                  2 3 6 5 -1
+                  3 0 7 6 -1
+                  4 5 6 7 -1
+                ]
+              }
+            ]
+          }
+        }
+      }
+      DEF BOTTOMJOINT SliderJoint {
+        jointParameters JointParameters {
+          axis 0 -1 0
+          minStop 0
+          maxStop 0.07
+        }
+        device [
+          LinearMotor {
+            name "bottom slider motor"
+            maxForce 200
+            maxVelocity 200
+            sound ""
+          }
+        ]
+        endPoint  DEF BOTTOMSLIDER Solid {
+          translation IS bsTranslation
+          rotation IS bsRotation
+          name "bottom slider"
+          contactMaterial IS bodyContactMaterial
+          physics IS sliderPhysics
+          boundingObject Transform {
+            children [
+              Box{
+                size 0.10 0.01 0.10
+              }
+            ]
+          }
+        }
+      }
+      DEF FRONTSUPPORT Solid {
+        translation 0 %{=-h/2 + df}% %{=-(0.5*math.sqrt(2)*br - 2*df)}%
+        name "front support"
+        contactMaterial IS bodyContactMaterial
+        physics IS supportPhysics
+        boundingObject Sphere {
+            radius %{=df}%
+            subdivision 1
+        }
+      }
+      DEF REARSUPPORT Solid {
+        translation 0 %{=-h/2 + df}%  %{=0.5*math.sqrt(2)*br - 2*df}%
+        name "rear support"
+        contactMaterial IS bodyContactMaterial
+        physics IS supportPhysics
+        boundingObject Sphere {
+            radius %{=df}%
+            subdivision 1
+        }
+      }
+      %{ if wp and wht > 0 then }%
+      DEF WEIGHT Solid {
+        translation 0 %{=-h/2 + df + wht/2}% 0
+        rotation 0 1 0 %{=math.pi / bs}%
+        name "weight"
+        contactMaterial IS bodyContactMaterial
+        physics IS weightPhysics
+        boundingObject Cylinder {
+          height IS weightThickness
+          radius IS bodyRadius
+          subdivision %{=bs}%
+        }
+      }
+      %{ end }%
+    ]
+    name                IS name
+    model               IS model
+    description         IS description
+    customData          IS customData
+    contactMaterial     IS bodyContactMaterial
+    immersionProperties IS immersionProperties
+    boundingObject Transform {
+      translation 0 -0.043 0
+      rotation 0 1 0 %{= 3 * math.pi / 2}%
+      children [
+        Shape {
+          geometry IndexedFaceSet {
+            coord Coordinate {
+              point [
+                 0.075  0.000  0.075
+                 0.075  0.000 -0.075
+                -0.090  0.000 -0.075
+                -0.090  0.000  0.075
+                 0.075  0.087  0.075
+                 0.075  0.087 -0.075
+                -0.025  0.087 -0.075
+                -0.025  0.087  0.075
+              ]
+            }
+            ccw TRUE
+            coordIndex [
+              3 2 1 0 -1
+              0 1 5 4 -1
+              1 2 6 5 -1
+              2 3 7 6 -1
+              3 0 4 7 -1
+              4 5 6 7 -1
+            ]
+          }
+        }
+      ]
+    }
+
+    physics
+    %{ if not kinematic then }%
+    IS bodyPhysics
+    %{ else }%
+    NULL
+    %{ end }%
+
+    locked              IS locked
+    translationStep     IS translationStep
+    rotationStep        IS rotationStep
+    radarCrossSection   IS radarCrossSection
+    controller          IS controller
+    controllerArgs      "%{=sn}%"
+    synchronization     IS synchronization
+    battery             IS battery
+    cpuConsumption      IS cpuConsumption
+    selfCollision       FALSE
+    showWindow          IS showWindow
+    window              IS window
+    remoteControl       IS remoteControl
+  }
+}

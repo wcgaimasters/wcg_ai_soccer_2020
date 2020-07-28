@@ -1,0 +1,30 @@
+#VRML_SIM R2020a utf8
+
+PROTO SoccerBallShape [
+  field SFFloat radius 0.02135
+  field SFInt32 subdivision 3
+  field SFString name "ball_shape"
+]
+{
+  Solid {
+    children [
+      Shape {
+        appearance Appearance {
+          material Material {
+            ambientIntensity 0.5
+          }
+          texture ImageTexture {
+            url [
+              "textures/football1.jpg"
+            ]
+          }
+        }
+        geometry Sphere {
+          radius IS radius
+          subdivision IS subdivision
+        }
+      }
+    ]
+    name IS name
+  }
+}

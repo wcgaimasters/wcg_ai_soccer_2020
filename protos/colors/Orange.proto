@@ -1,0 +1,11 @@
+#VRML_SIM R2020a utf8
+
+PROTO Orange [
+]
+{
+  Appearance {
+    material Material {
+      diffuseColor 1 0.647 0
+    }
+  }
+}

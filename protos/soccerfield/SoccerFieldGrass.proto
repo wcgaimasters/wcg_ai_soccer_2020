@@ -1,0 +1,65 @@
+#VRML_SIM R2020a utf8
+#Author(s):         Inbae Jeong, Chansol Hong, Taeyoung Kim
+# tags: static
+
+PROTO SoccerFieldGrass [
+  field SFVec3f    translation 0 0 0
+  field SFRotation rotation 0 1 0 0
+  field SFVec3f    scale 1 1 1
+
+  # fields specific to SoccerField
+  field SFFloat  blockSize 0.25
+  field SFFloat  length 4.6
+  field SFFloat  width 3.4
+
+  # fields specific to the floor logo
+  field SFBool   useBanner TRUE
+  field SFString url "textures/logo.png"
+  field SFFloat  bannerLength 0.3
+  field SFFloat  bannerWidth  1.2
+  field SFFloat  bannerHeight 0.0004
+]
+{
+  %{
+    local bs = fields.blockSize.value
+    local l  = fields.length.value
+    local w  = fields.width.value
+
+    local bn = math.floor(l / (2 * bs))
+    local ll = math.max(0, l / 2 - bs * bn)
+
+    local ub = fields.useBanner.value
+    local url = fields.url.value
+    local bl = fields.bannerLength.value
+    local bw = fields.bannerWidth.value
+    local bh = fields.bannerHeight.value
+  }%
+  Slot {
+    type "soccer_field_grass"
+    endPoint Transform {
+      translation IS translation
+      rotation IS rotation
+      scale IS scale
+      children [
+        Transform {
+          translation 0 0 0
+          children [
+            Shape {
+              appearance Appearance {
+                material Material {
+                  ambientIntensity 0
+                }
+                texture ImageTexture {
+                  url "textures/field.png"
+                }
+              }
+              geometry Plane {
+                size %{=l}% %{=w}%
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

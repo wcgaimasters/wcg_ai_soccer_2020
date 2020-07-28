@@ -1,0 +1,21 @@
+#VRML_SIM R2020a utf8
+
+PROTO SoccerBallOrangeShape [
+  field SFFloat radius 0.02135
+  field SFInt32 subdivision 3
+  field SFString name "orange_shape"
+]
+{
+  Solid {
+    children [
+      Shape {
+        appearance Orange { }
+        geometry Sphere {
+          radius IS radius
+          subdivision IS subdivision
+        }
+      }
+    ]
+    name IS name
+  }
+}

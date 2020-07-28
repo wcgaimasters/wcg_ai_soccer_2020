@@ -1,0 +1,11 @@
+#VRML_SIM R2020a utf8
+
+PROTO Skin_3 [
+]
+{
+  Appearance {
+    material Material {
+      diffuseColor 0.9 0.68 0.56
+    }
+  }
+}

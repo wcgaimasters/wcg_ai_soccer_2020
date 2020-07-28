@@ -1,0 +1,68 @@
+#VRML_SIM R2020a utf8
+#Author(s):         Inbae Jeong, Chansol Hong, Taeyoung Kim
+# tags: static
+
+PROTO SoccerRobotNumberPatch_B [
+  # fields inherited from Shape
+
+  # fields specific to Patch
+  field SFFloat length 0.15
+  field SFFloat width 0.15
+  # field SFFloat radius 0.0575
+  field SFString role "GK"
+  field SFBool isTeamTagRed TRUE
+  field SFString name "number_patch"
+  field SFFloat uniformnum 1
+  field SFColor color 0 0 0
+]
+{
+  %{
+    -- local variable
+    local isTeamTagRed = fields.isTeamTagRed.value
+    local un = fields.uniformnum.value
+  }%
+  Solid {
+    name IS name
+    children [
+      DEF TEAMPATCH Transform {
+        translation 0 0 0
+        rotation 0 1 0 %{=-math.pi/2}%
+        children [
+          Shape {
+            appearance Appearance {
+              material Material {
+                diffuseColor IS color
+              }
+            }
+            geometry Plane {
+              size %{=fields.width.value}% %{=fields.length.value}%
+            }
+            castShadows FALSE
+          }
+        ]
+      }
+      DEF NUMPATCH Transform {
+        translation 0 0.0015 0
+        rotation 0 1 0 %{=-math.pi/2}%
+        children [
+          Shape {
+            appearance Appearance {
+              material Material {}
+              texture ImageTexture {
+                %{
+                  local color
+                  if isTeamTagRed then color = 'red' else color = 'blue' end
+                }%
+                url [ "textures/position/%{=un}%_%{=fields.role.value}%.png" ]
+              }
+            }
+            geometry Plane {
+              size 0.1 0.1
+            }
+            castShadows FALSE
+          }
+        ]
+      }
+    ]
+  }
+}

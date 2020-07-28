@@ -1,0 +1,93 @@
+#VRML_SIM R2020a utf8
+#Author(s):         Inbae Jeong, Chansol Hong, Taeyoung Kim
+# tags: static
+
+PROTO SoccerRobotNumberPatch_H [
+  # fields inherited from Shape
+
+  # fields specific to Patch
+  field SFFloat length 0.1
+  field SFFloat width 0.1
+  # field SFFloat radius 0.0575
+  field SFString role "GK"
+  field SFBool isTeamTagRed TRUE
+  field SFString name "number_patch"
+  field SFFloat uniformnum 1
+  field SFColor color 0 0 0
+]
+{
+  %{
+    -- local variable
+    local isTeamTagRed = fields.isTeamTagRed.value
+    local un = fields.uniformnum.value
+  }%
+  Solid {
+    name IS name
+    children [
+      DEF TEAMPATCH Transform {
+        translation 0 0 0
+        rotation 0 1 0 %{=math.pi}%
+        children [
+          Shape {
+            appearance Appearance {
+              material Material {
+                diffuseColor IS color
+              }
+            }
+            geometry IndexedFaceSet {
+              coord Coordinate {
+                point [
+                  -0.038 0.000  0.082
+                  -0.090 0.000  0.070
+                  -0.090 0.000  0.060
+                  -0.050 0.000  0.045
+                  -0.050 0.000 -0.045
+                  -0.090 0.000 -0.060
+                  -0.090 0.000 -0.070
+                  -0.038 0.000 -0.082
+                   0.000 0.000 -0.085
+                   0.038 0.000 -0.082
+                   0.090 0.000 -0.070
+                   0.090 0.000 -0.060
+                   0.050 0.000 -0.045
+                   0.050 0.000  0.045
+                   0.090 0.000  0.060
+                   0.090 0.000  0.070
+                   0.038 0.000  0.082
+                   0.000 0.000  0.085
+
+                ]
+              }
+              coordIndex [
+                17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0 -1
+              ]
+            }
+            castShadows FALSE
+          }
+        ]
+      }
+      DEF NUMPATCH Transform {
+        translation 0 0.0015 0
+        rotation 0 1 0 %{=-math.pi/2}%
+        children [
+          Shape {
+            appearance Appearance {
+              material Material {}
+              texture ImageTexture {
+                %{
+                  local color
+                  if isTeamTagRed then color = 'red' else color = 'blue' end
+                }%
+                url [ "textures/position/%{=un}%_%{=fields.role.value}%.png" ]
+              }
+            }
+            geometry Plane {
+              size 0.1 0.1
+            }
+            castShadows FALSE
+          }
+        ]
+      }
+    ]
+  }
+}

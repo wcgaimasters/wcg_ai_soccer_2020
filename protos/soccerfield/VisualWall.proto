@@ -1,0 +1,428 @@
+#VRML_SIM R2020a utf8
+#Author(s):         Chansol Hong, Taeyoung Kim
+# tags: static
+
+PROTO VisualWall [
+  field SFVec3f    translation 0 0 0
+  field SFRotation rotation 0 1 0 0
+  field SFVec3f    scale 1 1 1
+  
+  field SFFloat    length 2.2
+  field SFFloat    width 1.8
+  field SFFloat    bannerHeight 0.2
+  field SFFloat    goalWidth 0.4
+  field SFFloat    bannerThickness 0.025
+  field SFFloat    frameThickness 0.01
+  
+  field SFFloat    gpTranslation 1.21
+  field SFFloat    gpScale 1
+
+  field SFBool     castShadows FALSE
+  field SFBool     bannerWall  FALSE
+  field SFBool     bannerFront FALSE
+  field SFBool     bannerBehind FALSE
+
+  field SFInt32    bannerHorizontal 8
+  field SFInt32    bannerVertical   2
+
+  field SFFloat    cornerLength 0.07
+
+
+  field SFNode     frameAppearance LightGray { }
+
+  field SFNode     wallAppearance Appearance {
+    material Material {
+      ambientIntensity 1
+      diffuseColor 1 1 1
+      transparency 0.9
+    }
+  }
+  
+  field MFString   url ["textures/kaist.png"]
+  field SFString   name "banner_wall"
+]
+{
+  %{
+    local l    = fields.length.value
+    local w    = fields.width.value
+    local bh   = fields.bannerHeight.value
+    local gw   = fields.goalWidth.value
+    local bt   = fields.bannerThickness.value
+    local gpt  = fields.gpTranslation.value
+    local gps  = fields.gpScale.value
+    local bw   = fields.bannerWall.value
+    local bhor = fields.bannerHorizontal.value
+    local bver = fields.bannerVertical.value
+    local cl   = fields.cornerLength.value
+    local url  = fields.url.value
+  }%
+  Solid {
+    translation IS translation
+    rotation IS rotation
+    name IS name
+    children [
+      #walls
+      Transform { # top
+        translation 0 0 %{=-w/2}%
+        children [
+          DEF TOP Group {
+            children [
+              Shape {
+                appearance IS frameAppearance
+                castShadows IS castShadows
+                geometry IndexedFaceSet {
+                  coord Coordinate {
+                    point [
+                      %{=l/2-cl}%     0    %{=-bt}%, # 0
+                      %{=l/2-cl}%     0           0, # 1
+                      %{=-l/2+cl}%    0           0, # 2
+                      %{=-l/2+cl}%    0    %{=-bt}%, # 3
+                      %{=l/2-cl}%    0.01  %{=-bt}%, # 4
+                      %{=l/2-cl}%    0.01         0, # 5
+                      %{=-l/2+cl}%   0.01         0, # 6
+                      %{=-l/2+cl}%   0.01  %{=-bt}%, # 7
+                    ]
+                  }
+                  coordIndex [
+                    7 6 5 4 -1 #top
+                    0 1 2 3 -1 #bottom
+                    5 6 2 1 -1 #inner
+                    0 3 7 4 -1 #outer
+                  ]
+                }
+              }
+              Shape {
+                appearance IS frameAppearance
+                castShadows IS castShadows
+                geometry IndexedFaceSet {
+                  coord Coordinate {
+                    point [
+                      %{=l/2-cl}%  %{=bh-0.01}% %{=-bt}%, # 0
+                      %{=l/2-cl}%  %{=bh-0.01}%        0, # 1
+                      %{=-l/2+cl}% %{=bh-0.01}%        0, # 2
+                      %{=-l/2+cl}% %{=bh-0.01}% %{=-bt}%, # 3
+                      %{=l/2-cl}%  %{=bh}%      %{=-bt}%, # 4
+                      %{=l/2-cl}%  %{=bh}%             0, # 5
+                      %{=-l/2+cl}% %{=bh}%             0, # 6
+                      %{=-l/2+cl}% %{=bh}%      %{=-bt}%, # 7
+                    ]
+                  }
+                  coordIndex [
+                    7 6 5 4 -1 #top
+                    0 1 2 3 -1 #bottom
+                    5 6 2 1 -1 #inner
+                    0 3 7 4 -1 #outer
+                  ]
+                }
+              }
+              Shape {
+                appearance IS wallAppearance
+                castShadows IS castShadows
+                geometry IndexedFaceSet {
+                  coord Coordinate {
+                    point [
+                      %{=l/2-cl}%      0.01     %{=-bt}%, # 0
+                      %{=l/2-cl}%      0.01            0, # 1
+                      %{=-l/2+cl}%     0.01            0, # 2
+                      %{=-l/2+cl}%     0.01     %{=-bt}%, # 3
+                      %{=l/2-cl}%  %{=bh-0.01}% %{=-bt}%, # 4
+                      %{=l/2-cl}%  %{=bh-0.01}%        0, # 5
+                      %{=-l/2+cl}% %{=bh-0.01}%        0, # 6
+                      %{=-l/2+cl}% %{=bh-0.01}% %{=-bt}%, # 7
+                    ]
+                  }
+                  coordIndex [
+                    5 6 2 1 -1 #inner
+                  ]
+                }
+              }
+              Shape {
+                appearance IS wallAppearance
+                castShadows IS castShadows
+                geometry IndexedFaceSet {
+                  coord Coordinate {
+                    point [
+                      %{=l/2-cl}%      0.01     %{=-bt}%, # 0
+                      %{=l/2-cl}%      0.01            0, # 1
+                      %{=-l/2+cl}%     0.01            0, # 2
+                      %{=-l/2+cl}%     0.01     %{=-bt}%, # 3
+                      %{=l/2-cl}%  %{=bh-0.01}% %{=-bt}%, # 4
+                      %{=l/2-cl}%  %{=bh-0.01}%        0, # 5
+                      %{=-l/2+cl}% %{=bh-0.01}%        0, # 6
+                      %{=-l/2+cl}% %{=bh-0.01}% %{=-bt}%, # 7
+                    ]
+                  }
+                  coordIndex [
+                    0 3 7 4 -1 #outer
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+      Transform { # left-top
+        translation %{=-l/2}% 0 0
+        children [
+          DEF SIDE Group {
+            children [
+              Shape {
+                appearance IS frameAppearance
+                castShadows IS castShadows
+                geometry IndexedFaceSet {
+                  coord Coordinate {
+                    point [
+                      0           0      %{=-w/2+cl}%, # 0
+                      0           0     %{=-gw/2-bt}%, # 1
+                      %{=-bt}%    0     %{=-gw/2-bt}%, # 2
+                      %{=-bt}%    0      %{=-w/2+cl}%, # 3
+                      0          0.01    %{=-w/2+cl}%, # 4
+                      0          0.01   %{=-gw/2-bt}%, # 5
+                      %{=-bt}%   0.01   %{=-gw/2-bt}%, # 6
+                      %{=-bt}%   0.01    %{=-w/2+cl}%, # 7
+                    ]
+                  }
+                  coordIndex [
+                    7 6 5 4 -1 #top
+                    0 1 2 3 -1 #bottom
+                    4 5 1 0 -1 #inner
+                    3 2 6 7 -1 #outer
+                  ]
+                }
+              }
+              Shape {
+                appearance IS frameAppearance
+                castShadows IS castShadows
+                geometry IndexedFaceSet {
+                  coord Coordinate {
+                    point [
+                      0         %{=bh-0.01}%   %{=-w/2+cl}%, # 0
+                      0         %{=bh-0.01}%  %{=-gw/2-bt}%, # 1
+                      %{=-bt}%  %{=bh-0.01}%  %{=-gw/2-bt}%, # 2
+                      %{=-bt}%  %{=bh-0.01}%   %{=-w/2+cl}%, # 3
+                      0         %{=bh}%        %{=-w/2+cl}%, # 4
+                      0         %{=bh}%       %{=-gw/2-bt}%, # 5
+                      %{=-bt}%  %{=bh}%       %{=-gw/2-bt}%, # 6
+                      %{=-bt}%  %{=bh}%        %{=-w/2+cl}%, # 7
+                    ]
+                  }
+                  coordIndex [
+                    7 6 5 4 -1 #top
+                    0 1 2 3 -1 #bottom
+                    4 5 1 0 -1 #inner
+                    3 2 6 7 -1 #outer
+                  ]
+                }
+              }
+              Shape {
+                appearance IS wallAppearance
+                castShadows IS castShadows
+                geometry IndexedFaceSet {
+                  coord Coordinate {
+                    point [
+                      0             0.01       %{=-w/2+cl}%, # 0
+                      0             0.01      %{=-gw/2-bt}%, # 1
+                      %{=-bt}%      0.01      %{=-gw/2-bt}%, # 2
+                      %{=-bt}%      0.01       %{=-w/2+cl}%, # 3
+                      0         %{=bh-0.01}%   %{=-w/2+cl}%, # 4
+                      0         %{=bh-0.01}%  %{=-gw/2-bt}%, # 5
+                      %{=-bt}%  %{=bh-0.01}%  %{=-gw/2-bt}%, # 6
+                      %{=-bt}%  %{=bh-0.01}%   %{=-w/2+cl}%, # 7
+                    ]
+                  }
+                  coordIndex [
+                    4 5 1 0 -1 #inner
+                  ]
+                }
+              }
+              Shape {
+                appearance IS wallAppearance
+                castShadows IS castShadows
+                geometry IndexedFaceSet {
+                  coord Coordinate {
+                    point [
+                      0             0.01       %{=-w/2+cl}%, # 0
+                      0             0.01      %{=-gw/2-bt}%, # 1
+                      %{=-bt}%      0.01      %{=-gw/2-bt}%, # 2
+                      %{=-bt}%      0.01       %{=-w/2+cl}%, # 3
+                      0         %{=bh-0.01}%   %{=-w/2+cl}%, # 4
+                      0         %{=bh-0.01}%  %{=-gw/2-bt}%, # 5
+                      %{=-bt}%  %{=bh-0.01}%  %{=-gw/2-bt}%, # 6
+                      %{=-bt}%  %{=bh-0.01}%   %{=-w/2+cl}%, # 7
+                    ]
+                  }
+                  coordIndex [
+                    3 2 6 7 -1 #outer
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+      Transform { # left-bottom
+        translation %{=-l/2}% 0 %{=w/2+gw/2-cl+bt}%
+        children [
+          USE SIDE
+        ]
+      }
+      Transform { # bottom
+        translation 0 0 %{=w/2+bt}%
+        children [
+          USE TOP
+        ]
+      }
+      Transform { # right-bottom
+        translation %{=l/2+bt}% 0 %{=w/2+gw/2-cl+bt}%
+        children [
+          USE SIDE
+        ]
+      }
+      Transform { # right-top
+        translation %{=l/2+bt}% 0 0
+        children [
+          USE SIDE
+        ]
+      }
+
+      #corners
+      Transform { # left_top_corner
+        translation %{=-l / 2}% 0 %{=-w / 2}%
+        children [
+          DEF LEFT_TOP_CORNER Group {
+            children [
+              Shape {
+                appearance IS frameAppearance
+                castShadows IS castShadows
+                geometry IndexedFaceSet {
+                  coord Coordinate {
+                    point [
+                      %{=cl}%     0    %{=-bt}%, # 0
+                      %{=cl}%     0           0, # 1
+                      0           0     %{=cl}%, # 2
+                      %{=-bt}%    0     %{=cl}%, # 3
+                      %{=cl}%    0.01  %{=-bt}%, # 4
+                      %{=cl}%    0.01         0, # 5
+                      0          0.01   %{=cl}%, # 6
+                      %{=-bt}%   0.01   %{=cl}%, # 7
+                    ]
+                  }
+                  coordIndex [
+                    7 6 5 4 -1 #top
+                    0 1 2 3 -1 #bottom
+                    5 6 2 1 -1 #inner
+                    0 3 7 4 -1 #outer
+                  ]
+                }
+              }
+              Shape {
+                appearance IS frameAppearance
+                castShadows IS castShadows
+                geometry IndexedFaceSet {
+                  coord Coordinate {
+                    point [
+                      %{=cl}%  %{=bh-0.01}%    %{=-bt}%, # 0
+                      %{=cl}%  %{=bh-0.01}%           0, # 1
+                      0        %{=bh-0.01}%     %{=cl}%, # 2
+                      %{=-bt}% %{=bh-0.01}%     %{=cl}%, # 3
+                      %{=cl}%  %{=bh}%         %{=-bt}%, # 4
+                      %{=cl}%  %{=bh}%                0, # 5
+                      0        %{=bh}%          %{=cl}%, # 6
+                      %{=-bt}% %{=bh}%          %{=cl}%, # 7
+                    ]
+                  }
+                  coordIndex [
+                    7 6 5 4 -1 #top
+                    0 1 2 3 -1 #bottom
+                    5 6 2 1 -1 #inner
+                    0 3 7 4 -1 #outer
+                  ]
+                }
+              }
+              Shape {
+                appearance IS wallAppearance
+                castShadows IS castShadows
+                geometry IndexedFaceSet {
+                  coord Coordinate {
+                    point [
+                      %{=cl}%      0.01        %{=-bt}%, # 0
+                      %{=cl}%      0.01               0, # 1
+                      0            0.01         %{=cl}%, # 2
+                      %{=-bt}%     0.01         %{=cl}%, # 3
+                      %{=cl}%  %{=bh-0.01}%    %{=-bt}%, # 4
+                      %{=cl}%  %{=bh-0.01}%           0, # 5
+                      0        %{=bh-0.01}%     %{=cl}%, # 6
+                      %{=-bt}% %{=bh-0.01}%     %{=cl}%, # 7
+                    ]
+                  }
+                  coordIndex [
+                    5 6 2 1 -1 #inner
+                  ]
+                }
+              }
+              Shape {
+                appearance IS wallAppearance
+                castShadows IS castShadows
+                geometry IndexedFaceSet {
+                  coord Coordinate {
+                    point [
+                      %{=cl}%      0.01        %{=-bt}%, # 0
+                      %{=cl}%      0.01               0, # 1
+                      0            0.01         %{=cl}%, # 2
+                      %{=-bt}%     0.01         %{=cl}%, # 3
+                      %{=cl}%  %{=bh-0.01}%    %{=-bt}%, # 4
+                      %{=cl}%  %{=bh-0.01}%           0, # 5
+                      0        %{=bh-0.01}%     %{=cl}%, # 6
+                      %{=-bt}% %{=bh-0.01}%     %{=cl}%, # 7
+                    ]
+                  }
+                  coordIndex [
+                    0 3 7 4 -1 #outer
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+      Transform { # left_bottom_corner
+        translation %{=-l / 2}% 0 %{=w / 2}%
+        rotation 0 1 0 %{=math.pi / 2}%
+        children [
+          USE LEFT_TOP_CORNER
+        ]
+      }
+      Transform { # right_top_corner
+        translation %{=l / 2}% 0 %{=-w / 2}%
+        rotation 0 1 0 %{=-math.pi / 2}%
+        children [
+          USE LEFT_TOP_CORNER
+        ]
+      }
+      Transform { # right_bottom_corner
+        translation %{=l / 2}% 0 %{=w / 2}%
+        rotation 0 1 0 %{=math.pi}%
+        children [
+          USE LEFT_TOP_CORNER
+        ]
+      }
+      Group { # goalposts
+        children [
+          Goalpost {
+            translation %{=-gpt}% 0 0
+            scale %{=gps}% %{=gps}% %{=gps}%
+            castShadows IS castShadows
+            name "goalpost_left"
+          }
+          Goalpost {
+            translation %{=gpt}% 0 0
+            scale %{=gps}% %{=gps}% %{=gps}%
+            rotation 0 1 0 3.141592635
+            castShadows IS castShadows
+            name "goalpost_right"
+          }
+        ]
+      }
+    ]
+  }
+}

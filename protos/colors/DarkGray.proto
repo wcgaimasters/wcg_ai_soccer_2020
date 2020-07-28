@@ -1,0 +1,11 @@
+#VRML_SIM R2020a utf8
+
+PROTO DarkGray [
+]
+{
+  Appearance {
+    material Material {
+      diffuseColor 0.25 0.25 0.25
+    }
+  }
+}
