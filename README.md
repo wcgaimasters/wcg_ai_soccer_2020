@@ -1,6 +1,6 @@
 # WCG AI Masters Simulation
 
-The [WCG AI Masters](https://www.wcg.com/new-horizons/view/AI-Masters) simulation environment for usage in local PCs.
+The WCG AI Masters simulation environment for usage in local PCs.
 
 - There are two ways to download the WCG AI Masters simulation program.
 - WCG AI Masters simulation program requires Webots Robot Simulator. Please refer to Webots official website's [installation procedure](https://www.cyberbotics.com/doc/guide/installation-procedure) to install Webots (Webots version should be R2020a-rev1).
@@ -11,7 +11,9 @@ Method 1. Go to [releases](https://github.com/wcgaimasters/wcg_ai_soccer_2020/re
 
 Method 2. Use following git command
 
-      git clone https://github.com/wcgaimasters/wcg_ai_soccer_2020.git --recurse-submodules
+      git clone https://github.com/wcgaimasters/wcg_ai_soccer_2020.git
+
+Method 3. Use 'Download ZIP'
 
 **How to run the simulation program**
 
